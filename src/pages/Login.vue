@@ -52,9 +52,9 @@ export default {
         this.loading_submit = true
         this.submit_text = '登录中'
         setTimeout(() => {
+          this.loading_submit = false
+          this.submit_text = '登录'
           if (valid) {
-            this.loading_submit = false
-            this.submit_text = '登录'
             if (this.loginForm.username === 'admin' && this.loginForm.password === 'admin') {
               console.log('登录成功')
               this.$message({
@@ -64,10 +64,16 @@ export default {
               sessionStorage.setItem('user', this.loginForm.username)
               this.$router.push({ path: '/main' })
             } else {
-              alert('请输入正确的用户名密码')
+              this.$message({
+                type: 'error',
+                message: '请输入正确的用户名密码'
+              })
             }
           } else {
-            console.log('error submit!!')
+            this.$message({
+              type: 'error',
+              message: '登录失败'
+            })
             return false
           }
         }, 2000)

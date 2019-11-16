@@ -24,15 +24,6 @@ export default {
       currentPath: ''
     }
   },
-  watch: {
-    $route: {
-      handler: function (val, oldVal) {
-        this.currentPath = val.path.replace('/', '')
-      },
-      // 深度观察监听
-      deep: true
-    }
-  },
   computed: {
     defaultActive: function () {
       return this.$route.path.replace('/', '')

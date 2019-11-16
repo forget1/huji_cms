@@ -35,6 +35,8 @@ export default {
           type: 'success',
           message: '退出成功'
         })
+        sessionStorage.removeItem('user')
+        this.$router.push('/')
       }
     }
   }

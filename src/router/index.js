@@ -21,6 +21,22 @@ export default new Router({
       name: 'Main',
       component: Main,
       redirect: '/hujiList',
+      beforeEnter: (to, from, next) => {
+        let user = sessionStorage.getItem('user')
+        if (from.path.startsWith('/')) {
+          if (!user) {
+            next({ path: '/' })
+          } else {
+            next()
+          }
+        } else {
+          if (!user) {
+            next({ path: '/' })
+          } else {
+            next()
+          }
+        }
+      },
       children: [
         {
           path: '/hujiList',
