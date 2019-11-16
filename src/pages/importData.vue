@@ -1,13 +1,20 @@
 <template>
-  <div>{{name}}</div>
+  <div>
+    <head-top></head-top>
+    <div>{{name}}</div>
+  </div>
 </template>
 
 <script>
+import headTop from '@/components/headTop'
 export default {
   data () {
     return {
       name: '数据导入'
     }
+  },
+  components: {
+    headTop
   }
 }
 </script>
