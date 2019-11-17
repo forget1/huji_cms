@@ -59,11 +59,59 @@
       </el-table>
     </div>
     <!-- 模态框部分 -->
-    <el-dialog title="修改户籍信息" :visible.sync="dialogFormVisible"></el-dialog>
+    <el-dialog title="修改户籍信息" :visible.sync="dialogFormVisible">
+      <el-form>
+        <el-form-item label="户主" label-width="100px">
+          <el-input v-model="name" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="详细地址" label-width="100px">
+          <el-input v-model="address" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="性别" label-width="100px">
+          <el-select v-model="sex" placeholder="请选择">
+            <el-option
+              v-for="item in sexOption"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="其他人员" label-width="100px">
+          <el-input v-model="otherPeople"></el-input>
+        </el-form-item>
+        <el-form-item label="户口类型" label-width="100px">
+          <el-select v-model="type" placeholder="请选择">
+            <el-option
+              v-for="item in typeOption"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="商铺图片" label-width="100px">
+          <el-upload
+            class="avatar-uploader"
+            :action="'//elm.cangdu.org' + '/v1/addimg/shop'"
+            :show-file-list="false"
+            :on-success="handleServiceAvatarScucess"
+            :before-upload="beforeAvatarUpload">
+            <img v-if="imgURL" :src="imgURL" class="avatar">
+            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+          </el-upload>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="updateShop">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
+// splice(1,1)
 import headTop from '@/components/headTop'
 export default {
   data () {
@@ -74,7 +122,7 @@ export default {
         name: 'test1',
         type: '城镇户口',
         address: '上海市普陀区真北路',
-        imgURL: 'http://img3.imgtn.bdimg.com/it/u=3077039820,3106231585&fm=26&gp=0.jpg',
+        imgURL: 'http://www.qbcgzfzd.com/cms/images/2019030409514259523828121994686560.jpg',
         otherPeople: '其他，其他，其他',
         sex: '男'
       }, {
@@ -82,7 +130,7 @@ export default {
         name: 'test2',
         type: '农村户口',
         address: '上海市普陀区真北路',
-        imgURL: 'http://img3.imgtn.bdimg.com/it/u=3077039820,3106231585&fm=26&gp=0.jpg',
+        imgURL: 'http://www.qbcgzfzd.com/cms/images/2019030409514259523828121994686560.jpg',
         otherPeople: '其他，其他，其他',
         sex: '男'
       }, {
@@ -90,7 +138,7 @@ export default {
         name: 'test3',
         type: '城镇户口',
         address: '上海市普陀区真北路',
-        imgURL: 'http://img3.imgtn.bdimg.com/it/u=3077039820,3106231585&fm=26&gp=0.jpg',
+        imgURL: 'http://www.qbcgzfzd.com/cms/images/2019030409514259523828121994686560.jpg',
         otherPeople: '其他，其他，其他',
         sex: '男'
       }, {
@@ -98,7 +146,7 @@ export default {
         name: 'test4',
         type: '农村户口',
         address: '上海市普陀区真北路',
-        imgURL: 'http://img3.imgtn.bdimg.com/it/u=3077039820,3106231585&fm=26&gp=0.jpg',
+        imgURL: 'http://www.qbcgzfzd.com/cms/images/2019030409514259523828121994686560.jpg',
         otherPeople: '其他，其他，其他',
         sex: '女'
       }],
@@ -109,7 +157,23 @@ export default {
       type: '',
       address: '',
       otherPeople: '',
-      sex: ''
+      sex: '',
+      imgURL: '',
+      index: '',
+      typeOption: [{
+        value: '城镇户口',
+        lable: '城镇户口'
+      }, {
+        value: '农村户口',
+        label: '农村户口'
+      }],
+      sexOption: [{
+        value: '男',
+        label: '男'
+      }, {
+        value: '女',
+        label: '女'
+      }]
     }
   },
   components: {
@@ -128,10 +192,41 @@ export default {
       this.address = row.address
       this.otherPeople = row.otherPeople
       this.sex = row.sex
+      this.imgURL = row.imgURL
+      this.index = index
     },
     handleDelete (index, row) {
       console.log(index)
       console.log(row.id)
+      this.tableData.splice(index, 1)
+    },
+    handleServiceAvatarScucess (res, file) {
+      if (res.status === 1) {
+        this.imgURL = '//elm.cangdu.org/img/' + res.image_path
+      } else {
+        this.$message.error('上传图片失败！')
+      }
+    },
+    beforeAvatarUpload (file) {
+      const isRightType = (file.type === 'image/jpeg') || (file.type === 'image/png')
+      const isLt2M = file.size / 1024 / 1024 < 2
+      if (!isRightType) {
+        this.$message.error('上传头像图片只能是 JPG 格式!')
+      }
+      if (!isLt2M) {
+        this.$message.error('上传头像图片大小不能超过 2MB!')
+      }
+      return isRightType && isLt2M
+    },
+    updateShop () {
+      this.$message.success('更新信息成功')
+      this.tableData[this.index].name = this.name
+      this.tableData[this.index].address = this.address
+      this.tableData[this.index].sex = this.sex
+      this.tableData[this.index].type = this.type
+      this.tableData[this.index].imgURL = this.imgURL
+      this.tableData[this.index].otherPeople = this.otherPeople
+      this.dialogFormVisible = false
     }
   }
 }
