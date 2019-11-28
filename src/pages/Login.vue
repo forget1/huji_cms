@@ -43,6 +43,12 @@ export default {
       submit_text: '登录'
     }
   },
+  created () {
+    let user = sessionStorage.getItem('user')
+    if (user) {
+      this.$router.push('/main')
+    }
+  },
   mounted () {
     this.loginAni = true
   },
